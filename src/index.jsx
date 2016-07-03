@@ -7,4 +7,4 @@ ReactDOM.render(
   <Router history={hashHistory}>
     <Route path="/" component={App}/>
   </Router>
-, document.getElementById('app'))
+, document.getElementById("root"))
