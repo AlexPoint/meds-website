@@ -1,3 +1,5 @@
+//import styles from '/stylesheets/modules/footer';
+require("stylesheets/modules/footer");
 import React from 'react';
 
 

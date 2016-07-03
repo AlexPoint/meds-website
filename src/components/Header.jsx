@@ -1,3 +1,5 @@
+//import styles from '../../stylesheets/modules/header';
+require("../../stylesheets/modules/header");
 import React from 'react';
 
 
