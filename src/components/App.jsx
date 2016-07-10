@@ -1,3 +1,4 @@
+import layoutStyles from '../../stylesheets/layout/shared.scss';
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
@@ -5,9 +6,9 @@ import Footer from './Footer';
 
 export default React.createClass({
   render: function() {
-    return <div>
+    return <div class="row">
     	<Header />
-    	<div id="content">Hello</div>
+    	<div id="content" className="column row">Hello</div>
     	<Footer />
 	</div>;
   }
