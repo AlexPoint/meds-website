@@ -36,6 +36,7 @@
     ]
   },
   "dependencies": {
+    "jquery": "^3.1.0",
     "react": "^15.1.0",
     "react-autosuggest": "^3.7.4",
     "react-dom": "^15.1.0",
