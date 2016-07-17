@@ -2,44 +2,15 @@ import $ from 'jquery';
 import React from 'react';
 import AutosuggessThemes from '../../stylesheets/components/DrugSearchBox.scss';
 import Autosuggest from 'react-autosuggest';
+import config from '../config/settings.js'
 
-
-// const drugs = [
-//     {
-//         cis: 1,
-//         name: 'doliprane',
-//         price: 1.0
-//     },
-//     {
-//         cis: 2,
-//         name: 'fervex',
-//         price: 1.10
-//     },
-//     {
-//         cis: 3,
-//         name: 'toplexile',
-//         price: 5.0
-//     }
-// ]
-
-// function getSuggestions(value) {
-// 	console.log("search drug for: "+ value);
-// 	const inputValue = value.trim().toLowerCase();
-
-// 	var filteredList = inputValue.length === 0 ? [] : drugs.filter(d =>
-//     	d.name.toLowerCase().indexOf(inputValue) >= 0
-// 	);
-// 	console.log(filteredList.length + " elements in filtered list")
-// 	return filteredList;
-// }
-
-function getSuggestionValue(suggestion) { // when suggestion selected, this function tells
-  return suggestion;                 // what should be the value of the input
+function getSuggestionValue(drug) { // when suggestion selected, this function tells
+  return drug.name;                 // what should be the value of the input
 }
 
-function renderSuggestion(suggestion) {
+function renderSuggestion(drug) {
   return (
-    <span>{suggestion}</span>
+    <span>{drug.name}</span>
   );
 }
 
@@ -49,46 +20,37 @@ class Example extends React.Component {
 
 	    this.state = {
 	      value: '',
-	      suggestions: []//getSuggestions('')
+	      suggestions: []
 	    };
 
 	    this.onChange = this.onChange.bind(this);
 	    this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
   	}
   	loadSuggestions(value) {
+  		// Don't fetch drug names on server if less than 3 characters
+  		if(typeof(value) === undefined || value.length < 3){
+  			this.setState({suggestions: []})
+  			return;
+  		}
+
 	    this.setState({
 	      isLoading: true
 	    });
-	    var that = this;
 	    
 	    // Call server for the list of drugs
 	    $.ajax({
-	    	url: 'http://localhost:9090/api/drug',
+	    	url: config.serverUrl + '/api/drug',
 	    	data: {name: value},
 	    	success: function(names){
-	    		that.setState({
+	    		this.setState({
 	    			suggestions: names,
 	    			isLoading: false
 	    		})
-	    	},
+	    	}.bind(this),
 	    	error: function(xhr, status, err){
-	    		that.setState({isLoading: false})
-	    	}
+	    		this.setState({isLoading: false})
+	    	}.bind(this)
 	    })
-	    // setTimeout(() => {
-	    //   const suggestions = getMatchingLanguages(value);
-
-	    //   if (value === this.state.value) {
-	    //     this.setState({
-	    //       isLoading: false,
-	    //       suggestions
-	    //     });
-	    //   } else { // Ignore suggestions if input value changed
-	    //     this.setState({
-	    //       isLoading: false
-	    //     });
-	    //   }
-	    // }, randomDelay());
 	}
   	onChange(event, { newValue }) {
 	    this.setState({
@@ -97,9 +59,6 @@ class Example extends React.Component {
 	}
 	onSuggestionsUpdateRequested({ value }) {
 		this.loadSuggestions(value);
-	    // this.setState({
-	    // 	suggestions: getSuggestions(value)
-	    // });
 	}
 	render(){
 		const { value, suggestions, isLoading } = this.state;
@@ -109,13 +68,6 @@ class Example extends React.Component {
 	      onChange: this.onChange
 	    };
 	    const status = (isLoading ? 'loading' : '');
-
-		// const { value, suggestions } = this.state;
-	 //    const inputProps = {
-	 //      placeholder: 'doliprane, fervex...',
-	 //      value,
-	 //      onChange: this.onChange
-	 //    };
 		return <Autosuggest suggestions={suggestions}
 		   onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
 		   getSuggestionValue={getSuggestionValue}
