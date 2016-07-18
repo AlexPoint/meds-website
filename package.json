@@ -41,6 +41,7 @@
     "react-autosuggest": "^3.7.4",
     "react-dom": "^15.1.0",
     "react-router": "^2.4.1",
-    "react-themeable": "^1.1.0"
+    "react-themeable": "^1.1.0",
+    "underscore": "^1.8.3"
   }
 }
