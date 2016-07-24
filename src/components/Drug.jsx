@@ -5,7 +5,39 @@ import foundationStyles from '../../node_modules/foundation-sites/dist/foundatio
 import layoutStyles from '../../stylesheets/layout/shared.scss';
 import appStyles from '../../stylesheets/components/drug.scss';
 import React from 'react';
-import DrugPrice from './DrugPrice';
+
+function drugViewModel(drugAndType){
+  if(typeof(drugAndType) === "undefined" || typeof(drugAndType.drug) === "undefined"){
+    return {};
+  }
+
+  // TODO: we inverted compositions and presentations in the db; invert below when db has been fixed
+  var presentation = drugAndType.drug.compositions && drugAndType.drug.compositions.length > 0 ?
+    drugAndType.drug.compositions[0] : "";
+  var compositions = drugAndType.drug.presentations ? _.map(drugAndType.drug.presentations, function(pres){
+    return {
+      substanceName: pres.substanceName,
+      substanceCode: pres.substanceCode
+    }
+  }): [];
+  return {
+    genericType: 0 <= drugAndType.type && drugAndType.type <= 4 ? genericTypes[drugAndType.type] : "",
+    name: drugAndType.drug.name,
+    cis: drugAndType.drug.cis,
+    owner: drugAndType.drug.owner,
+    price: presentation.price,
+    reimbursementRate: presentation.reimbursementRate,
+    compositions: compositions
+  }
+}
+
+const genericTypes = [
+  "princeps", // 0 
+  "générique", // 1
+  "génériques par complémentarité posologique", // 2
+  "", //  undefined
+  "générique substituable" // 4
+];
 
 class DrugPage extends React.Component {
   constructor(props){
@@ -61,18 +93,30 @@ class DrugPage extends React.Component {
       return (<div iv="content" className="column row">Drug couldn''t be found in db</div>)
     }
 
-    var price = <DrugPrice compositions={currentDrug.drug.compositions} />
+    var model = drugViewModel(currentDrug);
+    var otherDrugViews = _.map(otherDrugs, function(drugAndType){
+      var model = drugViewModel(drugAndType);
+      return (<li key={model.cis}>{model.name}: {model.price}€ (taux de remboursement: {model.reimbursementRate * 100}%) - {model.genericType}</li>)
+    })
+
+    //var price = <DrugPrice compositions={currentDrug.drug.compositions} />
     return (
     	<div id="content" className="column row">
-    		<h1>{currentDrug ? currentDrug.drug.name: "undefined"}</h1>
+    		<h1>{model.name}</h1>
         <div>
-          Laboratoire: {currentDrug ? currentDrug.drug.owner : undefined}
+          Pathologies contre lesquelles ce médicament peut être prescrit... (TODO)
         </div>
-        <ul>
-          {price}
-        </ul>
+        <div>
+          {model.price}€ - taux de remboursement : {model.reimbursementRate * 100}% - {model.genericType}
+        </div>
         <div>
           Autres médicaments du même groupe:
+          <ul>
+            {otherDrugViews}
+          </ul>
+        </div>
+        <div>
+          Laboratoire: {model.owner}
         </div>
     	</div>);
   }
