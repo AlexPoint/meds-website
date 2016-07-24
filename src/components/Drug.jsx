@@ -17,7 +17,8 @@ function drugViewModel(drugAndType){
   var compositions = drugAndType.drug.presentations ? _.map(drugAndType.drug.presentations, function(pres){
     return {
       substanceName: pres.substanceName,
-      substanceCode: pres.substanceCode
+      substanceCode: pres.substanceCode,
+      format: pres.name
     }
   }): [];
   return {
@@ -100,6 +101,9 @@ class DrugPage extends React.Component {
     })
 
     //var price = <DrugPrice compositions={currentDrug.drug.compositions} />
+    var compositions = _.map(model.compositions, function(compo){
+      return (<div key={compo.substanceCode}>{compo.substanceName} ({compo.format})</div>);
+    })
     return (
     	<div id="content" className="column row">
     		<h1>{model.name}</h1>
@@ -116,7 +120,17 @@ class DrugPage extends React.Component {
           </ul>
         </div>
         <div>
-          Laboratoire: {model.owner}
+          <h3>Details</h3>
+          <div>
+            Laboratoire: {model.owner}
+          </div>
+          <div>
+            Format: {model.format}
+          </div>
+          <div>
+            Principes actifs:
+            {compositions}
+          </div>
         </div>
     	</div>);
   }
